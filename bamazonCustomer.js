@@ -66,13 +66,13 @@ function runApp() {
       ]).then(function(order) {
 
 
-        //check if our store has enough of the product to meet the customer's request.
-        // we retrieve item's information including item quantity
-            console.log("order.action")
-            console.log(order.action)
+            //check if our store has enough of the product to meet the customer's request.
+            // we retrieve item's information including item quantity
             var query = connection.query(
               "SELECT item_id, product_name, price, stock_quantity FROM products WHERE ?", {
+                
                 item_id: order.action
+
               },
               function(err, res) {
                 console.log(" product #:"+ order.action  + ", quantity: " + order.quantity + " are chosen!\n");
@@ -95,14 +95,16 @@ function updateProduct(order, res) {
     var currentQuantity = res[0].stock_quantity;
     var orderQuantity = order.quantity;
     var newQuantity = currentQuantity - orderQuantity;
-    console.log(newQuantity);
+    
 
     if (newQuantity >= 0 && orderQuantity != 0) {
-        
         // process the order
+        var totalPrice = orderQuantity * res[0].price;
+
+        
         console.log('your order has been placed');
+
         // update products table
-          
         var query = connection.query(
             "UPDATE products SET stock_quantity = ? WHERE item_id = ?",
             [newQuantity, order.action],
@@ -114,8 +116,12 @@ function updateProduct(order, res) {
               //  },
 
               function(err, result) {
-                console.log(result);
-                // console.log(result.affectedRows + " product updated!\n"); 
+                // console.log(result);
+                console.log(result.affectedRows + " product updated!\n");
+                console.log('number of items left: ' + newQuantity);
+                console.log('your total is: $' + totalPrice);
+                console.log('your order has been placed'); 
+                console.log('Thank you for shopping with us today');
               }
             );
 
@@ -128,7 +134,7 @@ function updateProduct(order, res) {
     connection.end();
 
 }
-
+ 
 
 
 
